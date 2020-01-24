@@ -1,33 +1,33 @@
-const express= require('express');
-const router= express.Router();
-const mongoose=require('mongoose');
-const Note= require('../model/notemodel');
-
-
-router.get("/get", async(req, res, next) => {
-    try{
-      const notes= await Note.find();
-      res.json(notes);
-    } catch(err) {
-      res.json( {message:err});
-    }
+const express = require('express');
+const router = express.Router();
+const mongoose = require('mongoose');
+const Note = require('../model/notemodel');
+router.get('/get', (req, res) => {
+  Note.find()
+    .then(notes => {
+      res.send(notes);
+    })
+    .catch(err => console.log(err));
 });
 
-
-router.post("/post", async(req, res, next) => {
-    const note = new Note({
-      title : req.body.title,
-      content: req.body.content
-    });
-    try {
-      savedNote= await note.save();
-      res.json(savedNote);
-    } catch(err) {
-      res.status(404).json({
-        message: err
-      });
-  }
+router.get('/get/:id', (req, res) => {
+  const id = req.params.id;
+  Note.findById(id)
+    .then(notes => {
+      res.send(notes);
+    })
+    .catch(err => console.log(err));
 });
-    
 
-module.exports= router;
+router.post('/post', (req, res) => {
+  const note = new Note({ title: req.body.title, content: req.body.content });
+  return note
+    .save()
+    .then(result => {
+      console.log('Note is Created');
+      return res.send(result);
+    })
+    .catch(err => console.log(err));
+});
+
+module.exports = router;
